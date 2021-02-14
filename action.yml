@@ -1,0 +1,27 @@
+---
+name: "actions"
+description: "horde/components Github Actions wrapper"
+author: "Ralf Lang <lang@b1-systems.de>"
+branding:
+  icon: "flag"
+  color: "green"
+inputs:
+  organization:
+    description: "Organization to use"
+    required: false
+    default: "horde"
+  repository:
+    description: "The repository with the unit under test (use horde-deployment for apps)"
+    required: true
+
+  options:
+    description: "Additional options"
+    required: false
+    default: ""
+runs:
+  using: "docker"
+  image: Dockerfile
+  args:
+    - /srv/www/horde-components/vendor/bin/horde-components
+    - "${{ inputs.options }}"
+    - "${{ inputs.repository }}"

@@ -7,7 +7,10 @@ WORKDIR /srv/www/horde-uut
 # then cleans up zypper cache
 # then creates the target directory for horde and clones the deployment
 
-RUN zypper --non-interactive install --no-recommends --no-confirm \
+
+RUN mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts \
+    && cat ~/.ssh/known_hosts \
+    && zypper --non-interactive install --no-recommends --no-confirm \
     git-core \
     gzip \
     php-composer \
@@ -38,45 +41,18 @@ RUN zypper --non-interactive install --no-recommends --no-confirm \
     php7-tokenizer \
     php7-xmlrpc \
     php7-xmlwriter \
-    php8 \
-    php8-bcmath \
-    php8-ctype \
-    php8-curl \
-    php8-dom \
-    php8-gd \
-    php8-gettext \
-    php8-iconv \
-# imagick is not (yet) available for php 8
-#    php8-imagick \
-    php8-json \
-    php8-ldap \
-    php8-mbstring \
-    php8-mysql \
-    php8-opcache \
-    php8-openssl \
-    php8-pcntl \
-    php8-pdo \
-    php8-pear \
-    php8-phar \
-    php8-posix \
-    php8-redis \
-    php8-soap \
-    php8-sockets \
-    php8-sqlite \
-    php8-tokenizer \
-    php8-xmlrpc \
-    php8-xmlwriter \
     tar \
     unzip \
     gettext-tools \
     ## This step is needed because the docker base image's locale is crippled to save space. Horde NLS needs them
     && zypper --non-interactive install --no-recommends --no-confirm -f glibc-locale glibc-locale-base \
     && zypper clean -a \
+    && echo "$COMPOSER_AUTH" > /srv/www/deleteme \
     && mkdir -p /srv/www/horde-components \
     && mkdir -p /srv/www/horde-uut \
     && mkdir -p /srv/original_config/apps \
-    && git clone --depth 5 https://github.com/maintaina-com/horde-deployment /srv/www/horde-components \
-    && cd /sr/www/horde-components \
+    && git clone --depth 5 https://github.com/maintaina-com/horde-deployment.git /srv/www/horde-components \
+    && cd /srv/www/horde-components \
     && composer require horde/components \
     && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache
 

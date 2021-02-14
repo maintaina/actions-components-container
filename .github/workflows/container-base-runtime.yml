@@ -46,8 +46,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Prepare image build
+        run: |
+          mkdir -p --mode=700 ~/.ssh
+          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+          export COMPOSER_AUTH="{ \"github-oauth\": { \"github.com\": \"${{secrets.COMPOSER_PAT}}\" } }"
+          echo "AUTH"
+          echo $COMPOSER_AUTH
+          echo "SECRETS"
+          echo $secrets
+          echo "PAT"
+          echo $COMPOSER_PAT
+          echo "SECRETS.PAT"
+          echo $secrets.COMPOSER_PAT
       - name: Build image
-        run: mkdir -p --mode=700 ~/.ssh && ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts && docker build . --file Dockerfile --tag image
+        run: |
+          DOCKER_BUILDKIT=1 docker build \
+            --build-arg COMPOSER_AUTH=$COMPOSER_AUTH \
+            --file Dockerfile --tag image .
 
       - name: Log into registry
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
@@ -67,6 +83,7 @@ jobs:
 
           # Use Docker `latest` tag convention
           [ "$VERSION" == "master" ] && VERSION=latest
+          [ "$VERSION" == "main" ] && VERSION=latest
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
