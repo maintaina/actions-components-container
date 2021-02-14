@@ -46,7 +46,8 @@ RUN zypper --non-interactive install --no-recommends --no-confirm \
     php8-gd \
     php8-gettext \
     php8-iconv \
-    php8-imagick \
+# imagick is not (yet) available for php 8
+#    php8-imagick \
     php8-json \
     php8-ldap \
     php8-mbstring \
