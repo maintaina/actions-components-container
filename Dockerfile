@@ -78,8 +78,7 @@ RUN zypper --non-interactive install --no-recommends --no-confirm \
     && git clone --depth 5 https://github.com/maintaina-com/horde-deployment /srv/www/horde-components \
     && cd /sr/www/horde-components \
     && composer require horde/components \
-    && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache \
-    && chown -R wwwrun:www /srv/www/horde
+    && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache
 
 COPY ./bin/* /usr/local/bin/
 RUN chmod -R +x /usr/local/bin/*
