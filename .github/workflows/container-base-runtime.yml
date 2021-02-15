@@ -46,18 +46,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Prepare image build
+      - name: Prepare and build image
         run: |
           mkdir -p --mode=700 ~/.ssh
           ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
           export COMPOSER_AUTH="{ \"github-oauth\": { \"github.com\": \"${{secrets.COMPOSER_PAT}}\" } }"
-          env
-      - name: Build image
-        run: |
-          DOCKER_BUILDKIT=1 docker build \
-            --ssh $HOME/.ssh/github_rsa \
-            --build-arg COMPOSER_AUTH=$COMPOSER_AUTH \
-            --file Dockerfile --tag image .
+          echo $COMPOSER_AUTH >> COMPOSER_AUTH.txt
+          # --ssh $HOME/.ssh/github_rsa \
+          DOCKER_BUILDKIT=1 docker build --secret id=composerauth,src=COMPOSER_AUTH.txt --file Dockerfile --tag image .
 
       - name: Log into registry
         run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin

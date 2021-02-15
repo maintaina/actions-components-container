@@ -7,8 +7,8 @@ WORKDIR /srv/www/horde-uut
 # then cleans up zypper cache
 # then creates the target directory for horde and clones the deployment
 
-
-RUN zypper --non-interactive install --no-recommends --no-confirm \
+RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=$(cat /COMPOSER_AUTH) \
+    && zypper --non-interactive install --no-recommends --no-confirm \
     openssh-clients \
     git-core \
     gzip \
@@ -43,6 +43,7 @@ RUN zypper --non-interactive install --no-recommends --no-confirm \
     tar \
     unzip \
     gettext-tools \
+    && echo $COMPOSER_AUTH >> /srv/secret \
     ## This step is needed because the docker base image's locale is crippled to save space. Horde NLS needs them
     && zypper --non-interactive install --no-recommends --no-confirm -f glibc-locale glibc-locale-base \
     && mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts \
