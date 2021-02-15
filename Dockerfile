@@ -51,9 +51,8 @@ RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=
     && mkdir -p /srv/www/horde-components \
     && mkdir -p /srv/www/horde-uut \
     && mkdir -p /srv/original_config/apps \
-    && git clone --depth 5 https://github.com/maintaina-com/horde-deployment.git /srv/www/horde-components \
+    && git clone --depth 5 https://github.com/maintaina-com/horde-deployment.git /srv/www/horde-components -b components-only\
     && cd /srv/www/horde-components \
-    && composer require horde/components \
     && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache
 
 COPY ./bin/* /usr/local/bin/
