@@ -54,6 +54,7 @@ RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=
     && git clone --depth 5 https://github.com/maintaina-com/horde-deployment.git /srv/www/horde-components -b components-only\
     && cd /srv/www/horde-components \
     && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache
+    && ln -s /srv/www/horde-components/vendor/bin/horde-components /usr/bin/horde-components
 
 COPY ./bin/* /usr/local/bin/
 RUN chmod -R +x /usr/local/bin/*
