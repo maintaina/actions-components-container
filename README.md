@@ -28,3 +28,12 @@ docker pull ghcr.io/maintaina/actions-components-container/horde-components]
 
 To build this, your docker build command MUST convey a variable COMPOSER_PAT to the build env
 This must contain a github PAT with no/any scope.
+
+## How to run a local container off the image
+
+Supply a json structure via COMPOSER_AUTH
+
+
+```bash
+docker run -it --env COMPOSER_AUTH=... ghcr.io/maintaina/actions-components-container/horde-components /usr/bin/horde-components ... 
+```
