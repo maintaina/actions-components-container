@@ -8,9 +8,8 @@ WORKDIR /srv/www/horde-uut
 # then creates the target directory for horde and clones the deployment
 
 
-RUN mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts \
-    && cat ~/.ssh/known_hosts \
-    && zypper --non-interactive install --no-recommends --no-confirm \
+RUN zypper --non-interactive install --no-recommends --no-confirm \
+    openssh-clients \
     git-core \
     gzip \
     php-composer \
@@ -46,8 +45,8 @@ RUN mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hos
     gettext-tools \
     ## This step is needed because the docker base image's locale is crippled to save space. Horde NLS needs them
     && zypper --non-interactive install --no-recommends --no-confirm -f glibc-locale glibc-locale-base \
+    && mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts \
     && zypper clean -a \
-    && echo "$COMPOSER_AUTH" > /srv/www/deleteme \
     && mkdir -p /srv/www/horde-components \
     && mkdir -p /srv/www/horde-uut \
     && mkdir -p /srv/original_config/apps \

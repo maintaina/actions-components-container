@@ -51,17 +51,11 @@ jobs:
           mkdir -p --mode=700 ~/.ssh
           ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
           export COMPOSER_AUTH="{ \"github-oauth\": { \"github.com\": \"${{secrets.COMPOSER_PAT}}\" } }"
-          echo "AUTH"
-          echo $COMPOSER_AUTH
-          echo "SECRETS"
-          echo $secrets
-          echo "PAT"
-          echo $COMPOSER_PAT
-          echo "SECRETS.PAT"
-          echo $secrets.COMPOSER_PAT
+          env
       - name: Build image
         run: |
           DOCKER_BUILDKIT=1 docker build \
+            --ssh $HOME/.ssh/github_rsa \
             --build-arg COMPOSER_AUTH=$COMPOSER_AUTH \
             --file Dockerfile --tag image .
 
