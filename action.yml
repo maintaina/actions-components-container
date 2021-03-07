@@ -22,6 +22,5 @@ runs:
   using: "docker"
   image: Dockerfile
   args:
-    - /srv/www/horde-components/vendor/bin/horde-components
-    - "${{ inputs.options }}"
     - "${{ inputs.repository }}"
+    - "${{ inputs.options }}"

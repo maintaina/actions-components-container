@@ -60,5 +60,5 @@ RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=
 
 COPY ./bin/* /usr/local/bin/
 RUN chmod -R +x /usr/local/bin/*
-
+ENTRYPOINT /usr/local/bin/entrypoint.sh
 CMD ["/bin/bash"]
