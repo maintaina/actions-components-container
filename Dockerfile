@@ -1,4 +1,4 @@
-FROM docker.io/opensuse/tumbleweed:latest
+FROM docker.io/opensuse/leap:latest
 
 # set working directory for all subsequent steps (and images derived from this one)
 WORKDIR /srv/www/horde-uut
@@ -7,9 +7,11 @@ WORKDIR /srv/www/horde-uut
 # then cleans up zypper cache
 # then creates the target directory for horde and clones the deployment
 
+## Removed, does not exist in openSUSE Leap 15.2
+#    openssh-clients \
+
 RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=$(cat /COMPOSER_AUTH) \
     && zypper --non-interactive install --no-recommends --no-confirm \
-    openssh-clients \
     git-core \
     gzip \
     php-composer \
@@ -48,16 +50,15 @@ RUN --mount=type=secret,id=composerauth,dst=/COMPOSER_AUTH export COMPOSER_AUTH=
     && zypper --non-interactive install --no-recommends --no-confirm -f glibc-locale glibc-locale-base \
     && mkdir -p /root/.ssh/ && ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts \
     && zypper clean -a \
-    && mkdir -p /srv/www/horde-components \
-    && mkdir -p /srv/www/horde-uut \
+    && mkdir -p /srv/runtime/components \
+    && mkdir -p /srv/git \
     && mkdir -p /srv/original_config/apps \
-    && git clone --depth 5 https://github.com/maintaina-com/horde-deployment.git /srv/www/horde-components -b components-only\
-    && cd /srv/www/horde-components \
-    && composer install -n ; composer clear-cache ; rm -rf /root/.composer/cache \
-    && ln -s /srv/www/horde-components/vendor/bin/horde-components /usr/bin/horde-components
+    && git clone --depth 5 https://github.com/maintaina-com/components.git -b FRAMEWORK_6_0 /srv/runtime/components \
+    && cd /srv/runtime/components \
+    && composer require horde/test dev-FRAMEWORK_6_0 ; composer clear-cache ; rm -rf /root/.composer/cache \
+    && ln -s /srv/runtime/components/bin/horde-components /usr/local/bin/horde-components
 
 COPY ./bin/* /usr/local/bin/
 RUN chmod -R +x /usr/local/bin/*
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/bin/bash"]
